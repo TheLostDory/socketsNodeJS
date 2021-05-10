@@ -14,11 +14,17 @@
         </style>
     </head>
     <body>
-        <div id="getcount">
+        <div id="room1">
+            </div>
+        <div id="room2">
+            </div>
+        <div id="room3"></div>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.1.0/echarts.min.js"></script>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
             <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
             <script>
+                var socketId =['room1','room2','room3']
+
                 function  deepCopyFunction(inObject) {
                     let outObject;
                     let value;
@@ -57,8 +63,11 @@
                     var chart1 = echarts.init(myChart);
 
                 var socket = io.connect();
-                socket.on("room1", function(data){
-                    $('#getcount').html("The serie is: [" + data.room1 + "]")
+
+                for(let i = 0 ; i<socketId.length; i++){
+                    socket.on(`${socketId[i]}`, function(data){
+                    console.log('####D1', data);
+                    $(`#${socketId[i]}`).html("The data is: [" + data.data + "]")
                     
                     options.series.data=data.room1
                     var clone = deepCopyFunction(options)
@@ -67,8 +76,34 @@
 
                     console.log(newOptions);
                 })
+                }
+                
+                // socket.on("room2", function(data2){
+                //     console.log('####D1', data2);
+
+                //     $('#data2').html("The data2 is: [" + data2.room2 + "]")
+                    
+                //     options.series.data=data2.room2
+                //     var clone = deepCopyFunction(options)
+                //     var newOptions = clone;
+                //     chart1.setOption(newOptions);
+
+                //     console.log(newOptions);
+                // })
+                // socket.on("room3", function(data3){
+                //     console.log('####D1', data3);
+
+                //     $('#data3').html("The serie is: [" + data3.room3 + "]")
+                    
+                //     options.series.data=data3.room3
+                //     var clone = deepCopyFunction(options)
+                //     var newOptions = clone;
+                //     chart1.setOption(newOptions);
+
+                //     console.log(newOptions);
+                // })
             </script>
-        </div>
+        
 
     </body>
 </html>
