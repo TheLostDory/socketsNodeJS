@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>
+            Socket.io
+        </title>
+        <style>
+            .chartClass {
+                display: flex;
+                justify-content: center;
+                height: 500px; 
+                width: auto; 
+            }
+        </style>
+    </head>
+    <body>
+        <div id="getcount">
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.1.0/echarts.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+            <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+            <script>
+                function  deepCopyFunction(inObject) {
+                    let outObject;
+                    let value;
+                    let key;
+                    if (typeof inObject !== 'object' || inObject === null) {
+                    return inObject; // Return the value if inObject is not an object
+                        }
+                // Create an array or object to hold the values
+                    outObject = Array.isArray(inObject) ? [] : {};
+                // tslint:disable-next-line: forin
+                    for (key in inObject) {
+                    value = inObject[key];
+                    // Recursively (deep) copy for nested objects, including arrays
+                    outObject[key] = (typeof value === 'object' && value !== null) ? this.deepCopyFunction(value) : value;
+                }
+                    return outObject;
+                }
+                var options = 
+                    {
+                    xAxis: {
+                        type: 'category',
+                        data: ['1','2','3','4','5']
+                    },
+                    yAxis: {
+                        type: 'value'
+                    },
+                    series: [{
+                        data: [0,0,0,0,0],
+                        type: 'line'
+                    }]
+                }
+
+                var myChart = document.createElement('div');
+                    document.body.appendChild(myChart);
+                    myChart.classList.add("chartClass");
+                    var chart1 = echarts.init(myChart);
+
+                var socket = io.connect();
+                socket.on("room1", function(data){
+                    $('#getcount').html("The serie is: [" + data.room1 + "]")
+                    
+                    options.series.data=data.room1
+                    var clone = deepCopyFunction(options)
+                    var newOptions = clone;
+                    chart1.setOption(newOptions);
+
+                    console.log(newOptions);
+                })
+            </script>
+        </div>
+
+    </body>
+</html>
