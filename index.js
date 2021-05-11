@@ -6,10 +6,10 @@ var io = require('socket.io')(http);
 
 
 
-app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/index.html');
-});
-var socketId =['room1','room2','room3']
+// app.get('/', (req, res) => {
+//   res.sendFile(__dirname + '/index.html');
+// });
+// var socketId =['room1','room2','room3']
 
 const connection = mysql.createConnection({
     host:'localhost',
@@ -20,12 +20,88 @@ const connection = mysql.createConnection({
 
   
 
-io.sockets.on('connection', function (socket){
-    updateSeries(socket);
+io.sockets.on('connection', function (socket){console.log('ayreeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee');
+    addToTables()
+    // updateSeries(socket);
 })
-
+tables=['table_1','table_2']
 var oldLength = 0;
 var newLength = 0;
+
+async function addToTables(){
+    await addToTable1().then(
+    ).catch(
+    );
+    
+    await addToTable2().then().catch();
+    addToTables();
+}
+async function selectFromTables(tableName){
+    connection.promise().query(
+        `SELECT * FROM ${tableName}`,).then(results =>{
+            console.log(results[0]);
+    // bodyBhem= results[0][headersArray[i]];
+    // console.log(bodyBhem);
+
+            // for( let i in results[0]){
+            //     bodyArray.push(results[0][i].Field);
+            // }
+        })
+        .catch(error =>{
+            console.log('ERROR: ',error);
+        })
+}
+async function addToTable1(){
+    let randXData= Math.floor(Math.random() * 100);
+    let randYData= Math.floor(Math.random() * 100);
+    await connection.promise().query(
+    `INSERT INTO ${tables[0]} (xData,yData)  VALUES (${randXData}, ${randYData}) `,).then(results =>{
+        console.log('Affected Rows: ',results[0].affectedRows);
+    })
+    .catch(error =>{
+        console.log('ERROR: ',error);
+    })
+    console.log('################T1');
+     selectFromTables(tables[0])
+        return new Promise((resolve, reject) => {
+            setTimeout(()=> {
+                if (resolve) {
+                    resolve({msg: 'It works', data: 'some data'});
+                } else {
+                    // If promise can not be fulfilled due to some errors like network failure
+                    reject(new Error({msg: 'It does not work'}));
+                }
+            }, 5000);
+    });
+   
+
+}
+async function addToTable2(){
+    let randXData= Math.floor(Math.random() * 100);
+    let randYData= Math.floor(Math.random() * 100);
+    await connection.promise().query(
+    `INSERT INTO ${tables[1]} (xData2,yData2)  VALUES (${randXData}, ${randYData}) `,).then(results =>{
+        console.log('Affected Rows: ',results[0].affectedRows);
+    })
+    .catch(error =>{
+        console.log('ERROR: ',error);
+    })
+    console.log('################T2');
+
+    selectFromTables(tables[1])
+    
+        return new Promise((resolve, reject) => {
+            setTimeout(()=> {
+                if (resolve) {
+                    resolve({msg: 'It works', data: 'some data'});
+                } else {
+                    // If promise can not be fulfilled due to some errors like network failure
+                    reject(new Error({msg: 'It does not work'}));
+                }
+            }, 7000);
+        });
+}
+
 
 
 async function updateSeries(socket){
@@ -46,8 +122,9 @@ async function updateSeries(socket){
 
         connection.promise().query(
         `SELECT ${headersArray[i]} FROM trend_data`,).then(results =>{
-    bodyBhem= results[0];
-    console.log(bodyBhem);
+            console.log(results[0]);
+    // bodyBhem= results[0][headersArray[i]];
+    // console.log(bodyBhem);
 
             // for( let i in results[0]){
             //     bodyArray.push(results[0][i].Field);
