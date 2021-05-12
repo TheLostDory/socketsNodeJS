@@ -4,6 +4,7 @@ const mysql = require('mysql2');
 const http = require('http').Server(app);
 var io = require('socket.io')(http);
 var events = require('events');
+activeIds= [1,2,3];
 
 const connection = mysql.createConnection({
     host:'localhost',
@@ -12,16 +13,31 @@ const connection = mysql.createConnection({
     database:'testingsocket'
   });
 
+  io.sockets.on("test_socket_trigger", function(){
+    console.log('############################# TRIGGERRRRRRRRRRRRR');
+    for(let i = 0; i<activeIds.length;i++){
+        emit(activeIds[i])
+    }
+});
 
   io.sockets.on('connection', function (socket){
-    console.log('b aleb l emit l a7be');
-    addToTable(socket)
+      console.log('b aleb l connection');
+    // socket.emit("ayre", {data: true});
+    socket.on("test_socket_trigger", function(){
+        console.log('############################# TRIGGERRRRRRRRRRRRR');
+        for(let i = 0; i<activeIds.length;i++){
+            emit(activeIds[i])
+        }
+    });
+    socket.on('error', function (err) {
+        console.log(err);
+    });
+    // socket.emit("ayre", {data: true});
 })
 
+addToTable()
 
-
-async function emit(socket,tableName){
-    console.log('ayreeeeeeeeeeeeeeeeeee');
+async function emit(id){
         data =[]
         bhem = await connection.promise().query(
                 `SELECT * FROM ${tableName}`,).then(results =>{
@@ -36,37 +52,37 @@ async function emit(socket,tableName){
                     console.log('ERROR: ',error);
                 })
         console.log('##### DATA: ',data);
-        
-        socket.emit("trigger", {data: data});
+        socket.on("ayre", function(dataa){
+            console.log('ANA B ALEB L EMIT AYRE');
+        })
+        socket.emit(`${id}`, {data: data});
     }
 
-    async function addToTable(socket){
-        let randXData= Math.floor(Math.random() * 100);
-        tableName= 'test_socket'
-        await connection.promise().query(
-        `INSERT INTO ${tableName} (data) VALUES (${randXData}) `,).then(results =>{
-            console.log('Affected Rows: ',results[0].affectedRows);
-        })
-        .catch(error =>{
-            console.log('ERROR: ',error);
-        })
-                            
-                        
-    
-        emit(socket, tableName)
-     
-        console.log('################T1');
-        setTimeout(function(){
-            addToTable(socket);
-        }, 5000)
+function addToTable(){
+    let randXData = Math.floor(Math.random() * 100);
+    tableName = 'test_socket'
+    connection.promise().query(
+    `INSERT INTO ${tableName} (data) VALUES (${randXData}) `,).then(results =>{
+        console.log('Affected Rows: ',results[0].affectedRows);
         
-    }
+    io.sockets.emit(`test_socket_trigger`, {});
+    // emit(socket, tableName)
+    
+    console.log('################T1');
+    setTimeout(function(){
+        addToTable();
+    }, 5000)
+    }).catch(error =>{
+        console.log('ERROR: ',error);
+    });
+
+    
+}
+
 app.get('/', (req, res) => {
     res.sendFile(__dirname + '/socket.html');
   });
 
-// emit('test_socket')
-// addToTable()
 http.listen(3000, () => {
     console.log('listening on :3000');
   });

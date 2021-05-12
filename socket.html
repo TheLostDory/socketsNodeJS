@@ -14,7 +14,9 @@
         </style>
     </head>
     <body>
-        <div id="getcount">
+        <div id="1"></div>
+        <div id="2"></div>
+        <div id="3"></div>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.1.0/echarts.min.js"></script>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
             <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
@@ -57,8 +59,28 @@
                     var chart1 = echarts.init(myChart);
 
                 var socket = io.connect();
-                socket.on("trigger", function(data){
-                    $('#getcount').html("The serie is: [" + data.data + "]")
+                socket.on("1", function(data){
+                    $('#1').html("The serie is: [" + data.data + "]")
+                    
+                    options.series.data=data.room1
+                    var clone = deepCopyFunction(options)
+                    var newOptions = clone;
+                    chart1.setOption(newOptions);
+
+                    console.log(newOptions);
+                })
+                socket.on("2", function(data){
+                    $('#2').html("The serie is: [" + data.data + "]")
+                    
+                    options.series.data=data.room1
+                    var clone = deepCopyFunction(options)
+                    var newOptions = clone;
+                    chart1.setOption(newOptions);
+
+                    console.log(newOptions);
+                })
+                socket.on("3", function(data){
+                    $('#3').html("The serie is: [" + data.data + "]")
                     
                     options.series.data=data.room1
                     var clone = deepCopyFunction(options)
@@ -68,7 +90,6 @@
                     console.log(newOptions);
                 })
             </script>
-        </div>
 
     </body>
 </html>
