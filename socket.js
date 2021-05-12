@@ -4,6 +4,19 @@ const mysql = require('mysql2');
 const http = require('http').Server(app);
 var io = require('socket.io')(http);
 var events = require('events');
+var socketIo = require('socket.io')
+
+exports.register = (server, options) => {
+  var io = socketIo(server.listener);
+
+  return onConnect => {
+    io.on('connection', onConnect);
+  };
+};
+
+const myConnection = register(myServer);
+
+tableName= 'test_socket'
 
 const connection = mysql.createConnection({
     host:'localhost',
@@ -13,10 +26,10 @@ const connection = mysql.createConnection({
   });
 
 
-  io.sockets.on('connection', function (socket){
-    console.log('b aleb l emit l a7be');
-    addToTable(socket)
-})
+//   io.sockets.on('connection', function (socket){
+//     console.log('b aleb l emit l a7be');
+//     emit(socket,tableName)
+// })
 
 
 
@@ -37,10 +50,10 @@ async function emit(socket,tableName){
                 })
         console.log('##### DATA: ',data);
         
-        socket.emit("trigger", {data: data});
+        myConnection.emit("trigger", {data: data});
     }
 
-    async function addToTable(socket){
+    async function addToTable(){
         let randXData= Math.floor(Math.random() * 100);
         tableName= 'test_socket'
         await connection.promise().query(
@@ -51,8 +64,6 @@ async function emit(socket,tableName){
             console.log('ERROR: ',error);
         })
                             
-                        
-    
         emit(socket, tableName)
      
         console.log('################T1');
