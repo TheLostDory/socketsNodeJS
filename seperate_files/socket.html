@@ -39,13 +39,13 @@
                 var options = 
                     {
                     xAxis: {
-                        type: 'category',
-                        data: ['1','2','3','4','5']
+                        type: 'category'
                     },
                     yAxis: {
                         type: 'value'
                     },
                     series: [{
+                        smooth: true,
                         data: [0,0,0,0,0],
                         type: 'line'
                     }]
@@ -61,7 +61,7 @@
                 socket.on("trigger", function(data){
                     $('#getcount').html("The serie is: [" + data.data + "]")
                     
-                    options.series.data=data.room1
+                    options.series[0].data=data.data
                     var clone = deepCopyFunction(options)
                     var newOptions = clone;
                     chart1.setOption(newOptions);

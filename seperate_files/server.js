@@ -6,7 +6,7 @@ var io = require('socket.io')(http);
 var etl = require('./etl.js');
 const ioo = require("socket.io-client");
 
-var sockettt = ioo.connect("http://localhost:3100");
+var sockettt = ioo.connect("http://localhost:3000");
 tableName= 'test_socket';
 
 const connection = mysql.createConnection({
@@ -18,8 +18,8 @@ const connection = mysql.createConnection({
 
   io.sockets.on('connection', function (socket){
         console.log('socket successfully connected');
-        // emit(socket,tableName);
-        sockettt.on('t1_triggered', function (){
+        emit(socket,tableName);
+        socket.on('t1_triggered', function (){
             console.log('nehna bi aleb l trigger');
             emit(socket,tableName);
         })
@@ -40,9 +40,11 @@ async function emit(socket,tableName){
               .catch(error =>{
                   console.log('ERROR: ',error);
               })
-      console.log('##### DATA: ',data);
+              dataa= JSON.parse(data)
+              console.log('##### DATA: ',dataa);
       
-      socket.emit("trigger", {data: data});
+      io.sockets.emit("line", {data: dataa});
+      io.sockets.emit("bar", {data: dataa});
   }
 
 

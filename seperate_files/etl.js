@@ -1,8 +1,6 @@
-const express = require('express');
-const app = express();
 const mysql = require('mysql2');
-const http = require('http').Server(app);
-var io = require('socket.io')(http);
+const io = require("socket.io-client");
+var socket = io.connect("http://localhost:3000");
 
 const connection = mysql.createConnection({
     host:'localhost',
@@ -14,15 +12,16 @@ const connection = mysql.createConnection({
 tableName= 'test_socket';
 
 
-io.sockets.on('connection', function (socket){
-    console.log('etl connected');
-    addToTable(socket)
-})
-
-async function addToTable(socket){
-    let randXData= Math.floor(Math.random() * 100);
+async function addToTable(){
+    let randXData= Math.floor(Math.random() * 40);
+    data=[]
+    for(let i = 0; i<40;i++){
+        let randNumb= Math.floor(Math.random() * 400);
+        data.push(randNumb);
+    }
+    ayre= JSON.stringify(data)
     await connection.promise().query(
-    `INSERT INTO ${tableName} (data) VALUES (${randXData}) `,).then(results =>{
+    `UPDATE test_socket set data = '${ayre}'`,).then(results =>{
         console.log('Affected Rows: ',results[0].affectedRows);
     })
     .catch(error =>{
@@ -34,24 +33,10 @@ async function addToTable(socket){
                         
     console.log('################T1');
     setTimeout(function(){
+        console.log('bllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll');
         addToTable(socket);
-    }, 5000)
+    }, 2000)
     
 }
 
-
-
-
-//   module.exports = function(getIOInstance){
-   
-//         menuModel.addMenu(req.body,function(data){
-//             //I WANT EMIT HERE
-//             getIOInstance().sockets.emit()
-//             res.json(data)
-//         });
-//     return router;
-//   }
-
-http.listen(3100, () => {
-    console.log('listening on :3100');
-  });
+addToTable()
